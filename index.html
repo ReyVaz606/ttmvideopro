@@ -1,0 +1,328 @@
+<title>TTM Assistant web</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: una sola columna centrada; hero con un iPad dibujado en CSS que muestra la app real (barra de páginas arriba, pestañas a la izquierda, botones). */
+:root{
+  --bg:#F2F3F6; --surface:#FFFFFF; --ink:#151821; --muted:#5B6172; --line:#DADDE5;
+  --accent:#E8692C; --accent-ink:#FFFFFF; --device:#1A1D25; --screen:#0F1117; --key:#232733; --key-ink:#E9EBF1;
+  --display:"Sora", "Segoe UI", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1015; --surface:#171A22; --ink:#ECEEF3; --muted:#9AA0B0; --line:#2A2E3A;
+  --accent:#F2803F; --accent-ink:#14100C; --device:#2A2E3A; --screen:#0A0B0F; --key:#1F232D; --key-ink:#E9EBF1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1015; --surface:#171A22; --ink:#ECEEF3; --muted:#9AA0B0; --line:#2A2E3A;
+  --accent:#F2803F; --accent-ink:#14100C; --device:#2A2E3A; --screen:#0A0B0F; --key:#1F232D; --key-ink:#E9EBF1; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.note{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:2px 8px;display:inline-block}
+
+/* Cabecera */
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:20px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:18px}
+.logo{width:34px;height:34px;border-radius:9px;border:1.5px dashed var(--muted);display:grid;place-items:center;font-family:var(--mono);font-size:9px;color:var(--muted)}
+nav{display:flex;gap:20px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+nav a{text-decoration:none}
+nav a:hover{color:var(--ink)}
+
+/* Hero */
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center;padding-block:40px 64px}
+.hero h1{font-size:clamp(34px,5vw,54px);font-weight:700;letter-spacing:-.02em;margin-block:14px 18px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lead{color:var(--muted);font-size:18px;max-width:34ch;margin:0 0 28px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.btn-store{background:var(--ink);color:var(--bg)}
+.btn-store small{display:block;font-size:11px;font-weight:500;opacity:.75;line-height:1.1}
+.btn-store span{line-height:1.15}
+.btn-mac{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-mac:hover{border-color:var(--accent)}
+.fine{margin-top:16px;font-size:13px;color:var(--muted)}
+
+/* iPad dibujado */
+.ipad{background:var(--device);border-radius:28px;padding:14px;box-shadow:0 30px 60px -30px rgba(0,0,0,.45);max-width:100%}
+.screen{background:var(--screen);border-radius:16px;aspect-ratio:4/3;max-width:100%;display:grid;grid-template-rows:auto 1fr;overflow:hidden;color:var(--key-ink)}
+.pages{display:flex;gap:4px;padding:8px;border-bottom:1px solid #ffffff14;overflow:hidden}
+.pages b{flex:1;text-align:center;font:500 10px var(--body);padding:6px 0;border-radius:6px;color:#9AA0B0;white-space:nowrap}
+.pages b.on{background:var(--accent);color:#14100C}
+.body{display:grid;grid-template-columns:72px 1fr;min-height:0}
+.tabs{display:flex;flex-direction:column;gap:4px;padding:8px 6px;border-right:1px solid #ffffff14}
+.tabs i{font:500 10px var(--body);font-style:normal;padding:6px;border-radius:6px;color:#9AA0B0}
+.tabs i.on{background:#ffffff14;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:8px;padding:10px}
+.k{background:var(--key);border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font:500 10px/1.2 var(--body);border:1px solid #ffffff0d}
+.k .dot{width:8px;height:8px;border-radius:50%}
+.k small{font-family:var(--mono);font-size:8px;color:#9AA0B0}
+.tc{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;margin-top:10px}
+
+/* Secciones */
+section.band{padding-block:64px;border-top:1px solid var(--line)}
+.head{display:flex;flex-direction:column;gap:8px;margin-bottom:32px;max-width:60ch}
+.head h2{font-size:clamp(26px,3.4vw,36px);font-weight:600;letter-spacing:-.01em}
+.head p{color:var(--muted);margin:0}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 32px}
+.feat{display:flex;flex-direction:column;gap:6px;min-width:0}
+.feat .ic{width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;margin-bottom:6px}
+.feat .ic svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.feat h3{font-size:17px;font-weight:600}
+.feat p{margin:0;color:var(--muted);font-size:15px}
+
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.shot{aspect-ratio:4/3;max-width:100%;border:1.5px dashed var(--line);border-radius:14px;display:grid;place-items:center;color:var(--muted);font-family:var(--mono);font-size:12px;background:var(--surface);text-align:center;padding:8px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.step b{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.step h3{font-size:17px;margin-block:6px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.prose{min-width:0;max-width:62ch}
+.prose h3{font-size:16px;margin-block:20px 6px}
+.prose p,.prose li{color:var(--muted);font-size:15px}
+.prose ul{padding-left:18px;margin:0}
+.contact{max-width:560px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;align-self:start}
+.mail{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mail code{font-family:var(--mono);font-size:14px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);user-select:all}
+.copy{font:600 13px var(--body);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{padding-block:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+
+@media (max-width:860px){
+  .hero .wrap,.split{grid-template-columns:1fr}
+  .feats,.steps{grid-template-columns:1fr 1fr}
+  .shots{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  nav{display:none}
+  .feats,.steps,.shots{grid-template-columns:1fr}
+  .body{grid-template-columns:52px 1fr}
+  .grid{grid-template-columns:repeat(3,1fr);gap:6px;padding:8px}
+  .k:nth-child(n+10){display:none}
+  .pages b{font-size:8px}
+}
+
+/* Idioma */
+.es{display:none}
+html.lang-es .en{display:none}
+html.lang-es .es{display:inline}
+html.lang-es div.es,html.lang-es p.es,html.lang-es h1.es,html.lang-es h2.es,html.lang-es h3.es,html.lang-es li.es{display:block}
+.right{display:flex;align-items:center;gap:20px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:2px}
+.lang button{font:600 12px var(--mono);letter-spacing:.06em;border:0;background:transparent;color:var(--muted);padding:5px 10px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.lang button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+<header>
+  <div class="wrap">
+    <div class="brand"><div class="logo">LOGO</div>TTM Assistant</div>
+    <div class="right">
+      <nav>
+        <a href="#features"><span class="en">Features</span><span class="es">Funciones</span></a>
+        <a href="#get-started"><span class="en">Get started</span><span class="es">Empezar</span></a>
+        <a href="#support"><span class="en">Support</span><span class="es">Soporte</span></a>
+        <a href="#privacy"><span class="en">Privacy</span><span class="es">Privacidad</span></a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="btn-en" data-l="en" aria-pressed="true">EN</button>
+        <button type="button" id="btn-es" data-l="es" aria-pressed="false">ES</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow"><span class="en">iPad app · for DaVinci Resolve</span><span class="es">App para iPad · para DaVinci Resolve</span></div>
+      <h1><span class="en">Turn your iPad into an <em>editing control panel</em>.</span><span class="es">Convierte tu iPad en un <em>panel de edición</em>.</span></h1>
+      <p class="lead"><span class="en">Touch buttons that make editing in DaVinci Resolve faster. No Stream Deck needed: use the iPad you already own.</span><span class="es">Botones táctiles para editar más rápido en DaVinci Resolve. Sin comprar un Stream Deck: usa el iPad que ya tienes.</span></p>
+      <div class="ctas">
+        <a class="btn btn-store" href="#" aria-label="App Store">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 3h2v11.2l4.3-4.3 1.4 1.4L12 18l-6.7-6.7 1.4-1.4 4.3 4.3zM5 20h14v2H5z"/></svg>
+          <span><small><span class="en">Download on the</span><span class="es">Descárgala en el</span></small>App Store</span>
+        </a>
+        <a class="btn btn-mac" href="#get-started"><span class="en">Get the free Mac app</span><span class="es">Descargar para Mac (gratis)</span></a>
+      </div>
+      <p class="fine"><span class="en">Requires the free Mac companion app on the same Wi‑Fi.</span><span class="es">Requiere la app de Mac gratuita en el mismo Wi‑Fi.</span> <span class="note"><span class="en">official App Store badge goes here</span><span class="es">aquí irá el botón oficial del App Store</span></span></p>
+    </div>
+
+    <div>
+      <div class="ipad" role="img" aria-label="TTM Assistant on an iPad: page bar on top, tabs on the left, buttons">
+        <div class="screen">
+          <div class="pages">
+            <b>Media</b><b>Cut</b><b class="on">Edit</b><b>Fusion</b><b>Color</b><b>Fairlight</b><b>Deliver</b>
+          </div>
+          <div class="body">
+            <div class="tabs"><i class="on">Titles</i><i>Effects</i><i>Markers</i><i>Shortcuts</i></div>
+            <div class="grid">
+              <div class="k"><span class="dot" style="background:#F2803F"></span>Lower third<small>Studio</small></div>
+              <div class="k"><span class="dot" style="background:#5BA8F5"></span>Cross dissolve<small>⌘T</small></div>
+              <div class="k"><span class="dot" style="background:#6CCB8A"></span>Green marker<small>M</small></div>
+              <div class="k"><span class="dot" style="background:#F2803F"></span>Big title<small>Studio</small></div>
+              <div class="k"><span class="dot" style="background:#B58CF0"></span>Blade<small>⌘B</small></div>
+              <div class="k"><span class="dot" style="background:#5BA8F5"></span>Smooth zoom<small>Effect</small></div>
+              <div class="k"><span class="dot" style="background:#E5C35A"></span>LUT Rec709<small>LUT</small></div>
+              <div class="k"><span class="dot" style="background:#B58CF0"></span>Ripple delete<small>⇧⌫</small></div>
+              <div class="k"><span class="dot" style="background:#6CCB8A"></span>Red marker<small>M</small></div>
+              <div class="k"><span class="dot" style="background:#E5C35A"></span>YouTube render<small>Deliver</small></div>
+              <div class="k"><span class="dot" style="background:#5BA8F5"></span>Blur<small>Effect</small></div>
+              <div class="k"><span class="dot" style="background:#F2803F"></span>Intro + music<small>Multi-step</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tc">01:00:12:08 · Edit</div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="features">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow"><span class="en">Features</span><span class="es">Funciones</span></div>
+      <h2><span class="en">Every DaVinci Resolve page gets its own buttons</span><span class="es">Cada página de DaVinci Resolve con sus propios botones</span></h2>
+      <p><span class="en">You decide what each button does. The iPad switches pages on its own when you switch pages on your Mac.</span><span class="es">Tú decides qué hace cada botón. El iPad cambia de página solo cuando tú cambias de página en el Mac.</span></p>
+    </div>
+    <div class="feats">
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></div>
+        <h3><span class="en">Buttons for each page</span><span class="es">Botones por página</span></h3>
+        <p><span class="en">Edit, Fusion, Color, Fairlight and Deliver each have their own tabs and buttons. Titles, effects, markers, LUTs, renders and multi-step actions.</span><span class="es">Editar, Fusion, Color, Fairlight y Entrega tienen pestañas y botones distintos. Títulos, efectos, marcas, LUTs, renders y acciones de varios pasos.</span></p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h10M4 17h6M18 7h2M14 17h6"/><circle cx="16" cy="7" r="2"/><circle cx="12" cy="17" r="2"/></svg></div>
+        <h3><span class="en">Studio and free modes</span><span class="es">Modo Studio y modo gratis</span></h3>
+        <p><span class="en">With DaVinci Resolve Studio it controls Resolve directly, with no search pop-ups. It works with the free version too.</span><span class="es">Con DaVinci Resolve Studio usa el control directo, sin ventanas de búsqueda. Con la versión gratuita también funciona.</span></p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></div>
+        <h3><span class="en">Button packs</span><span class="es">Packs de botones</span></h3>
+        <p><span class="en">Save your buttons as a pack and share it. Import packs from other editors in one tap.</span><span class="es">Guarda tus botones como un pack y compártelo. Importa packs de otros editores con un toque.</span></p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></div>
+        <h3><span class="en">Keyboard shortcuts</span><span class="es">Atajos de teclado</span></h3>
+        <p><span class="en">Turn any shortcut into a big, easy-to-tap button. Compatible with Keyboard Maestro (optional, sold separately).</span><span class="es">Convierte cualquier atajo en un botón grande y fácil de tocar. Compatible con Keyboard Maestro (opcional, se vende por separado).</span></p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".8"/><path d="M2 9a14 14 0 0 1 20 0"/></svg></div>
+        <h3><span class="en">Wireless connection</span><span class="es">Conexión sin cables</span></h3>
+        <p><span class="en">Your iPad finds your Mac on the same Wi‑Fi. Pair them once with a 4-digit code.</span><span class="es">El iPad encuentra tu Mac en el mismo Wi‑Fi. Lo vinculas una vez con un código de 4 dígitos.</span></p>
+      </div>
+      <div class="feat">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="16" r="3"/><path d="M10.5 10.5l3 3"/></svg></div>
+        <h3><span class="en">Color nodes</span><span class="es">Nodos de color</span></h3>
+        <p><span class="en">On the Color page, a side tab shows the nodes of the current clip. Tap a number to jump to that node.</span><span class="es">En la página Color, una pestaña lateral muestra los nodos del clip actual. Tocas un número y saltas a ese nodo.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow"><span class="en">Screenshots</span><span class="es">Capturas</span></div>
+      <h2><span class="en">See it on the iPad</span><span class="es">Así se ve en el iPad</span></h2>
+    </div>
+    <div class="shots">
+      <div class="shot"><span class="en">Screenshot 1<br>Edit page</span><span class="es">Captura 1<br>página Editar</span></div>
+      <div class="shot"><span class="en">Screenshot 2<br>Color page + nodes</span><span class="es">Captura 2<br>página Color + nodos</span></div>
+      <div class="shot"><span class="en">Screenshot 3<br>creating a button</span><span class="es">Captura 3<br>crear un botón</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="get-started">
+  <div class="wrap">
+    <div class="head">
+      <div class="eyebrow"><span class="en">Free Mac app</span><span class="es">App de Mac gratuita</span></div>
+      <h2><span class="en">Ready in three steps</span><span class="es">Listo en tres pasos</span></h2>
+      <p><span class="en">The Mac app is free and lives in your menu bar. It receives the taps from your iPad and sends them to DaVinci Resolve.</span><span class="es">La app de Mac es gratis y se queda en la barra de menú. Recibe los toques del iPad y los manda a DaVinci Resolve.</span></p>
+    </div>
+    <div class="steps">
+      <div class="step"><b><span class="en">Step 1</span><span class="es">Paso 1</span></b><h3><span class="en">Install the Mac app</span><span class="es">Instala la app de Mac</span></h3><p><span class="en">Download it below and drag it to Applications.</span><span class="es">Descárgala abajo y arrástrala a Aplicaciones.</span></p></div>
+      <div class="step"><b><span class="en">Step 2</span><span class="es">Paso 2</span></b><h3><span class="en">Allow one permission</span><span class="es">Da un permiso</span></h3><p><span class="en">It only asks for Accessibility, so it can press shortcuts for you. Nothing else.</span><span class="es">Solo pide Accesibilidad, para poder pulsar atajos por ti. Nada más.</span></p></div>
+      <div class="step"><b><span class="en">Step 3</span><span class="es">Paso 3</span></b><h3><span class="en">Pair your iPad</span><span class="es">Vincula el iPad</span></h3><p><span class="en">Open the app on your iPad and enter the 4-digit code shown on your Mac.</span><span class="es">Abre la app en el iPad y escribe el código de 4 dígitos que ves en el Mac.</span></p></div>
+    </div>
+    <div class="ctas" style="margin-top:28px">
+      <a class="btn btn-store" href="#"><span class="en">Download for Mac (free)</span><span class="es">Descargar para Mac (gratis)</span></a>
+      <span class="fine" style="margin:0;align-self:center"><span class="note"><span class="en">download link added later</span><span class="es">el enlace se pone después</span></span></span>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="support">
+  <div class="wrap">
+    <div class="contact">
+      <div class="eyebrow"><span class="en">Support</span><span class="es">Soporte</span></div>
+      <h3 style="font-size:20px"><span class="en">Questions, or something not working?</span><span class="es">¿Dudas o algo no funciona?</span></h3>
+      <p style="margin:0;color:var(--muted);font-size:15px"><span class="en">Write to us and we'll get back to you as soon as we can.</span><span class="es">Escríbenos y te respondemos lo antes posible.</span></p>
+      <div class="mail">
+        <code id="mail">support@ttmvideopro.com</code>
+        <button class="copy" id="copyBtn" type="button"><span class="en">Copy</span><span class="es">Copiar</span></button>
+      </div>
+      <span class="note"><span class="en">sample email</span><span class="es">correo de ejemplo</span></span>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="privacy">
+  <div class="wrap">
+    <div class="prose">
+      <div class="eyebrow"><span class="en">Privacy policy</span><span class="es">Política de privacidad</span></div>
+      <h2 style="font-size:clamp(24px,3vw,32px);margin-top:8px"><span class="en">Your data stays on your devices</span><span class="es">Tus datos se quedan en tus equipos</span></h2>
+      <h3><span class="en">What data we collect</span><span class="es">Qué datos recogemos</span></h3>
+      <p><span class="en">None. TTM Assistant has no accounts, uses no analytics and sends no information to any server.</span><span class="es">Ninguno. TTM Assistant no tiene cuentas, no usa analíticas y no envía información a ningún servidor.</span></p>
+      <h3><span class="en">How the iPad and Mac connect</span><span class="es">Cómo se conectan el iPad y el Mac</span></h3>
+      <p><span class="en">They talk only over your local Wi‑Fi network. Your buttons and settings are stored on your own devices.</span><span class="es">Se comunican solo dentro de tu red Wi‑Fi local. Tus botones y ajustes se guardan en tus propios dispositivos.</span></p>
+      <h3><span class="en">Permissions</span><span class="es">Permisos</span></h3>
+      <ul>
+        <li><span class="en">iPad: local network access, to find your Mac.</span><span class="es">iPad: acceso a la red local, para encontrar tu Mac.</span></li>
+        <li><span class="en">Mac: Accessibility, to press shortcuts in DaVinci Resolve.</span><span class="es">Mac: Accesibilidad, para pulsar atajos en DaVinci Resolve.</span></li>
+      </ul>
+      <p class="fine"><span class="en">Last updated: November 2026</span><span class="es">Última actualización: noviembre de 2026</span> <span class="note"><span class="en">sample text, review before publishing</span><span class="es">texto de ejemplo, revisar antes de publicar</span></span></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 TTM Video Pro · ttmvideopro.com</span>
+    <span><span class="en">DaVinci Resolve and Keyboard Maestro are trademarks of their respective owners. TTM Assistant is not affiliated with them.</span><span class="es">DaVinci Resolve y Keyboard Maestro son marcas de sus respectivos dueños. TTM Assistant no está afiliada a ellas.</span></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  function setLang(l){
+    root.classList.toggle('lang-es',l==='es');
+    root.lang=l;
+    document.getElementById('btn-en').setAttribute('aria-pressed',l==='en');
+    document.getElementById('btn-es').setAttribute('aria-pressed',l==='es');
+    try{localStorage.setItem('ttm-lang',l)}catch(e){}
+  }
+  var saved='en';
+  try{saved=localStorage.getItem('ttm-lang')||'en'}catch(e){}
+  setLang(saved);
+  document.querySelectorAll('.lang button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.l)})});
+  document.getElementById('copyBtn').addEventListener('click',function(){
+    var b=this,t=document.getElementById('mail').textContent,lab=b.innerHTML;
+    function ok(){b.textContent=root.classList.contains('lang-es')?'Copiado':'Copied';setTimeout(function(){b.innerHTML=lab},1500)}
+    function fb(){var r=document.createRange();r.selectNodeContents(document.getElementById('mail'));var s=getSelection();s.removeAllRanges();s.addRange(r)}
+    try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}
+  });
+})();
+</script>
